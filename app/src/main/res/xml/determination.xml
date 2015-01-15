@@ -1,0 +1,10 @@
+<root>
+    <plant value="Plante">
+        <small value="Taille < 50 cm"></small>
+        <big value="Taille > 50 cm"></big>
+    </plant>
+    <animal value="Animal">
+        <vertebrate value="Vertébré"></vertebrate>
+        <invertebrate value="Invertébré"></invertebrate>
+    </animal>
+</root>
