@@ -20,7 +20,7 @@
  * @version $Revision$
  */
 
-package utils;
+package com.m2dl.nater.utils;
 
 import java.security.AccessController;
 import java.security.Provider;
