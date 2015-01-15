@@ -36,11 +36,15 @@ public class PictureActivity extends Activity{
 
     private Camera mCamera;
     private PreviewCamera mPreview;
+    private Button buttonCapture;
+    private boolean isCaptured;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture);
+        isCaptured = false;
+        buttonCapture = (Button)findViewById(R.id.button_capture);
         mCamera = getCameraInstance();
 
         mPreview = new PreviewCamera(this, mCamera);
@@ -53,10 +57,26 @@ public class PictureActivity extends Activity{
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        isCaptured = true;
+                        buttonCapture.setVisibility(View.GONE);
                         mCamera.takePicture(null, null, mPicture);
                     }
                 }
         );
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isCaptured) {
+            isCaptured = false;
+            buttonCapture.setVisibility(View.VISIBLE);
+            FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+            preview.removeAllViews();
+            preview.addView(mPreview);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
 
