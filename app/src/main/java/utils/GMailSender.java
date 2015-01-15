@@ -2,12 +2,18 @@ package utils;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +28,7 @@ public class GMailSender extends javax.mail.Authenticator {
     private String user;
     private String password;
     private Session session;
+    private Multipart _multipart;
 
     static {
         Security.addProvider(new JSSEProvider());
@@ -51,6 +58,7 @@ public class GMailSender extends javax.mail.Authenticator {
 
     public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
         try{
+            _multipart = new MimeMultipart();
             MimeMessage message = new MimeMessage(session);
             DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
             message.setSender(new InternetAddress(sender));
@@ -60,9 +68,9 @@ public class GMailSender extends javax.mail.Authenticator {
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
             else
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
+            message.setContent(_multipart);
             Transport.send(message);
         }catch(Exception e){
-
         }
     }
 
@@ -102,6 +110,19 @@ public class GMailSender extends javax.mail.Authenticator {
 
         public OutputStream getOutputStream() throws IOException {
             throw new IOException("Not Supported");
+        }
+
+        public void addAttachment(String filename, String subject) throws Exception {
+            BodyPart messageBodyPart = new MimeBodyPart();
+            DataSource source = new FileDataSource(filename);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(filename);
+            _multipart.addBodyPart(messageBodyPart);
+
+            BodyPart messageBodyPart2 = new MimeBodyPart();
+            messageBodyPart2.setText(subject);
+
+            _multipart.addBodyPart(messageBodyPart2);
         }
     }
 }
