@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.security.Security;
 import java.util.Properties;
 
+/* http://stackoverflow.com/questions/2020088/sending-email-in-android-using-javamail-api-without-using-the-default-built-in-a/2033124#2033124 */
+
 public class GMailSender extends javax.mail.Authenticator {
     private String mailhost = "smtp.gmail.com";
     private String user;
