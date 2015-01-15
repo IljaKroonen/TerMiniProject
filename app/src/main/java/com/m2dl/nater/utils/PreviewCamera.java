@@ -22,7 +22,7 @@ public class PreviewCamera extends SurfaceView implements SurfaceHolder.Callback
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         Camera.Parameters params = mCamera.getParameters();
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         mCamera.setParameters(params);
 
         this.setOnClickListener(new OnClickListener() {
