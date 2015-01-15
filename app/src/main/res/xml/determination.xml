@@ -1,7 +1,7 @@
 <root>
     <plant value="Plante">
-        <small value="Taille < 50 cm"></small>
-        <big value="Taille > 50 cm"></big>
+        <small value="Taille inférieure à 50 cm"></small>
+        <big value="Taille  supérieure à cm"></big>
     </plant>
     <animal value="Animal">
         <vertebrate value="Vertébré"></vertebrate>
