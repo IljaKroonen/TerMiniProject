@@ -14,4 +14,9 @@ public class Picture {
     public Date mDate;
     public String mUser;
     public IdentificationKey mIdentificationKey;
+
+    @Override
+    public String toString(){
+        return mLocation + "\n" + mDate + "\n" + mUser + "\n" + mIdentificationKey;
+    }
 }
