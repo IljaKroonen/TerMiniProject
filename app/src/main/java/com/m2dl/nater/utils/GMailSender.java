@@ -1,4 +1,4 @@
-package utils;
+package com.m2dl.nater.utils;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -28,7 +28,7 @@ public class GMailSender extends javax.mail.Authenticator {
     private String user;
     private String password;
     private Session session;
-    private Multipart _multipart;
+    private Multipart _multipart = new MimeMultipart();
 
     static {
         Security.addProvider(new JSSEProvider());
@@ -56,9 +56,21 @@ public class GMailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);
     }
 
+    public synchronized void addAttachment(String filename, String subject) throws Exception {
+        BodyPart messageBodyPart = new MimeBodyPart();
+        DataSource source = new FileDataSource(filename);
+        messageBodyPart.setDataHandler(new DataHandler(source));
+        messageBodyPart.setFileName(filename);
+        _multipart.addBodyPart(messageBodyPart);
+
+        BodyPart messageBodyPart2 = new MimeBodyPart();
+        messageBodyPart2.setText(subject);
+
+        _multipart.addBodyPart(messageBodyPart2);
+    }
+
     public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {
         try{
-            _multipart = new MimeMultipart();
             MimeMessage message = new MimeMessage(session);
             DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));
             message.setSender(new InternetAddress(sender));
@@ -70,7 +82,8 @@ public class GMailSender extends javax.mail.Authenticator {
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));
             message.setContent(_multipart);
             Transport.send(message);
-        }catch(Exception e){
+        } finally {
+            _multipart = new MimeMultipart();
         }
     }
 
@@ -110,19 +123,6 @@ public class GMailSender extends javax.mail.Authenticator {
 
         public OutputStream getOutputStream() throws IOException {
             throw new IOException("Not Supported");
-        }
-
-        public void addAttachment(String filename, String subject) throws Exception {
-            BodyPart messageBodyPart = new MimeBodyPart();
-            DataSource source = new FileDataSource(filename);
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(filename);
-            _multipart.addBodyPart(messageBodyPart);
-
-            BodyPart messageBodyPart2 = new MimeBodyPart();
-            messageBodyPart2.setText(subject);
-
-            _multipart.addBodyPart(messageBodyPart2);
         }
     }
 }

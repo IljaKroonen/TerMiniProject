@@ -9,9 +9,14 @@ import java.util.Date;
  * Data structure representing a picture taken by a user.
  */
 public class Picture {
-    private Uri mImageUri;
-    private Location mLocation;
-    private Date mDate;
-    private String mUser;
-    private IdentificationKey mIdentificationKey;
+    public Uri mImageUri;
+    public Location mLocation;
+    public Date mDate;
+    public String mUser;
+    public IdentificationKey mIdentificationKey;
+
+    @Override
+    public String toString(){
+        return mLocation + "\n" + mDate + "\n" + mUser + "\n" + mIdentificationKey;
+    }
 }
