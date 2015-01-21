@@ -2,6 +2,7 @@ package com.m2dl.nater.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.Image;
@@ -19,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.m2dl.nater.R;
+import com.m2dl.nater.data.IdentificationKey;
 import com.m2dl.nater.utils.PreviewCamera;
 
 import java.io.File;
@@ -110,6 +112,12 @@ public class PictureActivity extends Activity{
         mCamera.takePicture(null, null, mPicture);
     }
 
+    public void next(View v) {
+        Intent intent = new Intent(this, IdentificationKey.class);
+        startActivity(intent);
+        finish();
+    }
+
 
     private void setListener() {
         informationsLayout.setOnTouchListener(new View.OnTouchListener() {
@@ -118,18 +126,16 @@ public class PictureActivity extends Activity{
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                   if (!isCommented && commentSelected) {
-                       generateCommentaire(params, event);
-                   }
-                    else if (!isSelected && selectionSelected){
-                        generateSelection(params,event);
-                   }
+                    if (!isCommented && commentSelected) {
+                        generateCommentaire(params, event);
+                    } else if (!isSelected && selectionSelected) {
+                        generateSelection(params, event);
+                    }
                 }
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     if (isCommented && commentSelected) {
                         moveCommentaire(params, event.getX(), event.getY());
-                    }
-                    else if (isSelected && selectionSelected) {
+                    } else if (isSelected && selectionSelected) {
                         moveSelection(params, event.getX(), event.getY());
                     }
                 }

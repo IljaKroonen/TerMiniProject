@@ -74,10 +74,12 @@
     <Button
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/button_flash"
-        android:background="@drawable/flash_button"
+        android:id="@+id/button_next"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/fleche"
         android:layout_margin="20dp"
-        android:onClick="flash"
+        android:onClick="next"
         />
 
 </RelativeLayout>
