@@ -357,7 +357,11 @@ public class PictureActivity extends Activity implements LocationListener{
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("Latitude","Longitude");
+        String lat =  location.getLatitude()+"";
+       String lon = location.getLongitude()+"";
+        Log.d(lat,"Latitude");
+        Log.d(lon,"Longitude");
+
     }
 
     @Override
