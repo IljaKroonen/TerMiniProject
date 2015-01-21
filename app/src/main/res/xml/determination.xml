@@ -1,20 +1,20 @@
 <root>
-    <!--<plant>-->
-        <!--<value>Plante</value>-->
-        <!--<small>-->
-            <!--<value>Taille < 50 cm</value>-->
-        <!--</small>-->
-        <!--<big>-->
-            <!--<value>Taille > 50 cm</value>-->
-        <!--</big>-->
-    <!--</plant>-->
-    <!--<animal>-->
-        <!--<value>Animal</value>-->
-        <!--<vertebrate>-->
-            <!--<value>Vertébré</value>-->
-        <!--</vertebrate>-->
-        <!--<invertebrate>-->
-            <!--<value>Invertébré</value>-->
-        <!--</invertebrate>-->
-    <!--</animal>-->
+    <plant>
+        <value>Plante</value>
+        <small>
+            <value>Taille inférieure à 50 cm</value>
+        </small>
+        <big>
+            <value>Taille supérieure à 50 cm</value>
+        </big>
+    </plant>
+    <animal>
+        <value>Animal</value>
+        <vertebrate>
+            <value>Vertébré</value>
+        </vertebrate>
+        <invertebrate>
+            <value>Invertébré</value>
+        </invertebrate>
+    </animal>
 </root>
