@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +33,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class PictureActivity extends Activity{
+public class PictureActivity extends Activity implements LocationListener{
 
     private static final String TAG = "CallCamera";
 
@@ -60,6 +63,13 @@ public class PictureActivity extends Activity{
     private boolean selectionSelected;
     private boolean isLighOn;
 
+    protected LocationManager locationManager;
+    protected LocationListener locationListener;
+    String lat;
+    String provider;
+    protected String latitude,longitude;
+    protected boolean gps_enabled,network_enabled;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +84,8 @@ public class PictureActivity extends Activity{
 //
 //        initView();
 //        setListener();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
     @Override
@@ -343,4 +355,23 @@ public class PictureActivity extends Activity{
         }
     };
 
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("Latitude","Longitude");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
 }
