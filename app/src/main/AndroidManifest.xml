@@ -17,8 +17,16 @@
             android:label="Nater">
         </activity>
 
+        <activity android:name=".activity.RegisterActivity"
+            android:label="Nater">
+        </activity>
+
+        <activity android:name=".activity.PictureActivity"
+            android:label="Nater">
+        </activity>
+
         <activity
-            android:name=".activity.PictureActivity"
+            android:name=".activity.SplashScreenActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
