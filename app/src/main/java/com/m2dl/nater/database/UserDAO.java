@@ -42,16 +42,24 @@ public class UserDAO extends DAOBase{
         mDb.delete(TABLE_NAME,null,null);
     }
 
-    public String getPseudo() {
-        Cursor cursor = mDb.rawQuery("select " + PSEUDO + " from " + TABLE_NAME , null);
-        cursor.moveToFirst();
-        return cursor.getString(0);
-    }
-
     public String getMail() {
         Cursor cursor = mDb.rawQuery("select " + MAIL +" from " + TABLE_NAME , null);
         cursor.moveToFirst();
         return cursor.getString(0);
+    }
+
+    public String getPseudo() {
+        Cursor cursor = mDb.rawQuery("select " + PSEUDO +" from " + TABLE_NAME , null);
+        cursor.moveToFirst();
+        return cursor.getString(0);
+    }
+
+    public boolean isEmpty() {
+        Cursor cursor = mDb.rawQuery("select " + ID +" from " + TABLE_NAME, null);
+        if(cursor.getCount()==0)
+            return true;
+        else
+            return false;
     }
 
 
