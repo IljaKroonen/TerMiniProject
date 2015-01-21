@@ -113,7 +113,7 @@ public class PictureActivity extends Activity{
     }
 
     public void next(View v) {
-        Intent intent = new Intent(this, IdentificationKey.class);
+        Intent intent = new Intent(this, IdentificationKeyActivity.class);
         startActivity(intent);
         finish();
     }
