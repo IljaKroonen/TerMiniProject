@@ -1,6 +1,7 @@
 package com.m2dl.nater.data;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Xml;
 
 import com.m2dl.nater.R;
@@ -28,7 +29,7 @@ public class IdentificationKey {
     public IdentificationKey(Context context) throws Exception {
         Document document = domFactory.newDocumentBuilder().parse(context.getResources().openRawResource(R.raw.determination));
         parsed = parseNode(document.getChildNodes().item(0));
-    }
+}
 
     public String[] getCurrentChoices() {
         // Size of the amount of choices available in the last element in path
@@ -58,9 +59,12 @@ public class IdentificationKey {
             Node n = nodes.item(i);
             if (n.getNodeName().equalsIgnoreCase("value")) {
                 ret.setValue(n.getTextContent());
+            } else if (n.getNodeName().equals("#text")) {
+
             } else {
-                ret.getChoices().add(parseNode(n));
-            }
+                    ret.getChoices().add(parseNode(n));
+             }
+
         }
 
         return ret;

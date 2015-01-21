@@ -38,19 +38,19 @@ public class IdentificationKeyActivity extends Activity {
         okButtpn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                key.registerChoice((String)spinner.getSelectedItem());
-                if (key.getCurrentChoices().length == 0) {
-                    // Activity done
-                }
-                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(thisActivity, R.id.spinner, Arrays.asList(key.getCurrentChoices()));
-                spinner.setAdapter(spinnerArrayAdapter);
+                // Activity done
             }
         });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Activity done
+                key.registerChoice((String)spinner.getSelectedItem());
+                if (key.getCurrentChoices().length == 0) {
+                    // Activity done
+                }
+                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(thisActivity, android.R.layout.simple_spinner_item, Arrays.asList(key.getCurrentChoices()));
+                spinner.setAdapter(spinnerArrayAdapter);
             }
         });
     }
