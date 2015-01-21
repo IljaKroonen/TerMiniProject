@@ -2,14 +2,19 @@ package com.m2dl.nater.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -30,46 +35,160 @@ public class PictureActivity extends Activity{
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    Uri fileUri = null;
-    ImageView photoImage = null;
     int cameraId = -1;
 
     private Camera mCamera;
     private PreviewCamera mPreview;
     private Button buttonCapture;
     private boolean isCaptured;
+    private Button buttonFlash;
+    private Button buttonSwitch;
+    private Button buttonSelection;
+    private Button buttonComment;
+    private FrameLayout preview;
+    private FrameLayout informationsLayout;
+    private Context context;
+
+    private EditText comment;
+    private ImageView selection;
+    private boolean isCommented;
+    private boolean isSelected;
+
+    private boolean commentSelected;
+    private boolean selectionSelected;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture);
+        context = this;
         isCaptured = false;
-        buttonCapture = (Button)findViewById(R.id.button_capture);
+        isCommented = false;
+        isSelected = false;
+        commentSelected = false;
+        selectionSelected = false;
         mCamera = getCameraInstance();
 
+        initView();
+        setListener();
+    }
+
+    private void initView() {
+        buttonCapture = (Button)findViewById(R.id.button_capture);
+        buttonFlash = (Button)findViewById(R.id.button_flash);
+        buttonSwitch = (Button)findViewById(R.id.button_rotate);
+        buttonSelection = (Button)findViewById(R.id.button_select);
+        buttonComment = (Button)findViewById(R.id.button_comment);
+
         mPreview = new PreviewCamera(this, mCamera);
-
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
+        informationsLayout = (FrameLayout) findViewById(R.id.informations);
         preview.addView(mPreview);
+    }
 
-        Button captureButton = (Button) this.findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isCaptured = true;
-                        buttonCapture.setVisibility(View.GONE);
-                        mCamera.takePicture(null, null, mPicture);
+    public void capture(View v){
+        isCaptured = true;
+        hideElements();
+        mCamera.takePicture(null, null, mPicture);
+    }
+
+
+    private void setListener() {
+        informationsLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                   if (!isCommented && commentSelected) {
+                       generateCommentaire(params, event);
+                   }
+                    else if (!isSelected && selectionSelected){
+                        generateSelection(params,event);
+                   }
+                }
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    if (isCommented && commentSelected) {
+                        moveCommentaire(params, event.getX(), event.getY());
+                    }
+                    else if (isSelected && selectionSelected) {
+                        moveSelection(params, event.getX(), event.getY());
                     }
                 }
-        );
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                }
+                return true;
+            }
+        });
+    }
+
+    private void generateCommentaire(FrameLayout.LayoutParams params, MotionEvent event) {
+        isCommented = true;
+        comment = new EditText(context);
+        comment.setBackgroundColor(Color.TRANSPARENT);
+        comment.setTextColor(Color.WHITE);
+        comment.setTextSize(20);
+
+        moveCommentaire(params, event.getX(), event.getY());
+
+        informationsLayout.addView(comment);
+
+
+        comment.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(comment, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    private void generateSelection(FrameLayout.LayoutParams params, MotionEvent event) {
+        isSelected = true;
+        selection = new ImageView(context);
+        selection.setImageResource(R.drawable.selection);
+        moveSelection(params, event.getX(), event.getY());
+
+        informationsLayout.addView(selection);
+    }
+
+    private void moveCommentaire(FrameLayout.LayoutParams params, float x, float y) {
+        params.leftMargin = (int) x - comment.getHeight();
+        params.topMargin = (int) y - (comment.getWidth() / 2);
+        comment.setLayoutParams(params);
+        comment.invalidate();
+    }
+
+    private void moveSelection(FrameLayout.LayoutParams params, float x, float y) {
+        params.leftMargin = (int) x - selection.getHeight();
+        params.topMargin = (int) y - (selection.getWidth() / 2);
+        selection.setLayoutParams(params);
+        selection.invalidate();
+    }
+
+    private void showElements() {
+        buttonCapture.setVisibility(View.VISIBLE);
+        buttonFlash.setVisibility(View.VISIBLE);
+        buttonSwitch.setVisibility(View.VISIBLE);
+        buttonSelection.setVisibility(View.INVISIBLE);
+        buttonComment.setVisibility(View.INVISIBLE);
+        informationsLayout.removeAllViews();
+        informationsLayout.setVisibility(View.GONE);
+        isCommented = false;
+        isSelected = false;
+    }
+
+    private void hideElements() {
+        buttonCapture.setVisibility(View.GONE);
+        buttonFlash.setVisibility(View.GONE);
+        buttonSwitch.setVisibility(View.GONE);
+        buttonSelection.setVisibility(View.VISIBLE);
+        buttonComment.setVisibility(View.VISIBLE);
+        informationsLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onBackPressed() {
         if (isCaptured) {
+            showElements();
             isCaptured = false;
-            buttonCapture.setVisibility(View.VISIBLE);
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
             preview.removeAllViews();
             preview.addView(mPreview);
@@ -79,6 +198,30 @@ public class PictureActivity extends Activity{
         }
     }
 
+    public void select(View v) {
+        if (selectionSelected) {
+            selectionSelected = false;
+            buttonSelection.setBackgroundResource(R.drawable.select_button);
+            return;
+        }
+        selectionSelected = true;
+        commentSelected = false;
+        buttonComment.setBackgroundResource(R.drawable.comment_button);
+        buttonSelection.setBackgroundResource(R.drawable.select_button_press);
+    }
+
+
+    public void comment(View v) {
+        if (commentSelected) {
+            commentSelected = false;
+            buttonComment.setBackgroundResource(R.drawable.comment_button);
+            return;
+        }
+        selectionSelected = false;
+        commentSelected = true;
+        buttonComment.setBackgroundResource(R.drawable.comment_button_press);
+        buttonSelection.setBackgroundResource(R.drawable.select_button);
+    }
 
     private static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));
@@ -122,14 +265,6 @@ public class PictureActivity extends Activity{
         return cameraId;
     }
 
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public static Camera getCameraInstance(){
         Camera c = null;
         try {
@@ -150,7 +285,6 @@ public class PictureActivity extends Activity{
                 Log.d(TAG, "Error creating media file, check storage permissions: " );
                 return;
             }
-
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
