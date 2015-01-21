@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -21,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.m2dl.nater.R;
 import com.m2dl.nater.data.IdentificationKey;
@@ -86,7 +89,70 @@ public class PictureActivity extends Activity implements LocationListener{
 //        setListener();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        Button useOtherCamera = (Button) findViewById(R.id.button_rotate);
+//if phone has only one camera, hide "switch camera" button
+        useOtherCamera.setVisibility(View.INVISIBLE);
+            useOtherCamera.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean inPreview = true;
+                    SurfaceHolder previewHolder=null;
+                    if (inPreview) {
+                        mCamera.stopPreview();
+                    }
+                    //NB: if you don't release the current camera before switching, you app will crash
+                    mCamera.release();
+
+                    //swap the id of the camera to be used
+                    int currentCameraId = 0;
+                    if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                    } else {
+                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                    }
+                    mCamera = Camera.open(currentCameraId);
+                    //Code snippet for this method from somewhere on android developers, i forget where
+                    //setCameraDisplayOrientation(PictureActivity.this, currentCameraId, mCamera);
+                    try {
+                        //this step is critical or preview on new camera will no know where to render to
+
+
+                        mCamera.setPreviewDisplay(previewHolder);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mCamera.startPreview();
+                }
+            });
+
     }
+
+    public static void setCameraDisplayOrientation(Activity activity,
+                                                   int cameraId, android.hardware.Camera camera) {
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = activity.getWindowManager().getDefaultDisplay()
+                .getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
+    }
+
 
     @Override
     public void onResume() {
@@ -378,4 +444,15 @@ public class PictureActivity extends Activity implements LocationListener{
     public void onProviderDisabled(String provider) {
         Log.d("Latitude","disable");
     }
+
+public void rotate() {
+    cameraId = findFrontFacingCamera();
+    if (cameraId < 0) {
+        Toast.makeText(this, "No front facing camera found.",
+                Toast.LENGTH_LONG).show();
+    } else {
+        mCamera = Camera.open(cameraId);
+    }
+}
+
 }
