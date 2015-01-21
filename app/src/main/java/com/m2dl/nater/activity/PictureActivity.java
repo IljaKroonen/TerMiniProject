@@ -56,6 +56,7 @@ public class PictureActivity extends Activity{
 
     private boolean commentSelected;
     private boolean selectionSelected;
+    private boolean isLighOn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -250,6 +251,31 @@ public class PictureActivity extends Activity{
         }
 
         return mediaFile;
+    }
+
+    public void flash(View v){
+
+        Camera.Parameters p = mCamera.getParameters();
+        if (isLighOn) {
+
+            Log.i("info", "torch is turn off!");
+
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            mCamera.setParameters(p);
+            mCamera.startPreview();
+            isLighOn = false;
+
+        } else {
+
+            Log.i("info", "torch is turn on!");
+
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+
+            mCamera.setParameters(p);
+            mCamera.startPreview();
+            isLighOn = true;
+
+        }
     }
 
     private int findFrontFacingCamera() {

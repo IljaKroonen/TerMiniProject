@@ -25,6 +25,7 @@
         android:id="@+id/button_flash"
         android:background="@drawable/flash_button"
         android:layout_margin="20dp"
+        android:onClick="flash"
         />
 
     <Button
