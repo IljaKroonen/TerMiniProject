@@ -1,43 +1,82 @@
 package com.m2dl.nater.data;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import com.m2dl.nater.R;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- * Data structure representing the identification key of a species.
+ * Data structure representing the identification key of a species. Currently, the XML file is
+ * parsed for each instance ; in the future, it would be good to do this only one time to avoid
+ * spilled resources.
  */
 public class IdentificationKey {
     private static final DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 
-    private Context context;
-    private Document document;
-    private List<String> path = new ArrayList<>();
+    private KeyNode parsed;
+    private List<KeyNode> path = new ArrayList<>();
 
     public IdentificationKey(Context context) throws Exception {
-        this.context = context;
-        this.document = domFactory.newDocumentBuilder().parse(context.getResources().getString(R.xml.determination));
+        Document document = domFactory.newDocumentBuilder().parse(context.getResources().getString(R.xml.determination));
+        parsed = parseNode(document);
     }
 
     public String[] getCurrentChoices() {
-        return null;
+        // Size of the amount of choices available in the last element in path
+        String[] ret = new String[getCurrentKeyNode().getChoices().size()];
+
+        for (int i = 0; i < getCurrentKeyNode().getChoices().size(); i++) {
+            ret[i] = getCurrentKeyNode().getChoices().get(i).getValue();
+        }
+
+        return ret;
     }
 
     public void registerChoice(String choice) {
+        for (KeyNode it : getCurrentKeyNode().getChoices()) {
+            if (it.getValue().equals(choice)) {
+                path.add(it);
+                return;
+            }
+        }
+    }
+
+    public KeyNode parseNode(Node node) {
+        KeyNode ret = new KeyNode();
+
+        NodeList nodes = node.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node n = nodes.item(i);
+            if (n.getLocalName().equalsIgnoreCase("value")) {
+                ret.setValue(n.getTextContent());
+            } else {
+                ret.getChoices().add(parseNode(n));
+            }
+        }
+
+        return ret;
     }
 
     @Override
     public String toString() {
-        return "";
+        String ret = "";
+
+        for (int i = 0; i < path.size(); i++) {
+            ret = ret + " | " + path.get(i).getValue();
+        }
+
+        return ret;
+    }
+
+    private KeyNode getCurrentKeyNode() {
+        return path.get(path.size() - 1);
     }
 }
