@@ -68,10 +68,27 @@ public class PictureActivity extends Activity{
         isSelected = false;
         commentSelected = false;
         selectionSelected = false;
-        mCamera = getCameraInstance();
+//        mCamera = getCameraInstance();
+//
+//        initView();
+//        setListener();
+    }
 
+    @Override
+    public void onResume() {
+        mCamera = getCameraInstance();
         initView();
         setListener();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mCamera.stopPreview();
+        mCamera.setPreviewCallback(null);
+        isCaptured = false;
+        showElements();
+        super.onPause();
     }
 
     private void initView() {
@@ -149,6 +166,9 @@ public class PictureActivity extends Activity{
 
         informationsLayout.addView(selection);
     }
+
+
+
 
     private void moveCommentaire(FrameLayout.LayoutParams params, float x, float y) {
         params.leftMargin = (int) x - comment.getHeight();
@@ -253,24 +273,18 @@ public class PictureActivity extends Activity{
         return mediaFile;
     }
 
+
     public void flash(View v){
 
         Camera.Parameters p = mCamera.getParameters();
         if (isLighOn) {
-
-            Log.i("info", "torch is turn off!");
-
             p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             mCamera.setParameters(p);
             mCamera.startPreview();
             isLighOn = false;
 
         } else {
-
-            Log.i("info", "torch is turn on!");
-
             p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-
             mCamera.setParameters(p);
             mCamera.startPreview();
             isLighOn = true;
