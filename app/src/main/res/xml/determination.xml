@@ -2,10 +2,10 @@
     <plant>
         <value>Plante</value>
         <small>
-            <value>Taille < 50 cm</value>
+            <value>Taille inférieure à 50 cm</value>
         </small>
         <big>
-            <value>Taille > 50 cm</value>
+            <value>Taille supérieure à 50 cm</value>
         </big>
     </plant>
     <animal>
