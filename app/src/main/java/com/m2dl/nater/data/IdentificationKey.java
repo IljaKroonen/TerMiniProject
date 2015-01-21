@@ -1,6 +1,7 @@
 package com.m2dl.nater.data;
 
 import android.content.Context;
+import android.util.Xml;
 
 import com.m2dl.nater.R;
 
@@ -25,8 +26,8 @@ public class IdentificationKey {
     private List<KeyNode> path = new ArrayList<>();
 
     public IdentificationKey(Context context) throws Exception {
-        Document document = domFactory.newDocumentBuilder().parse(context.getResources().getString(R.xml.determination));
-        parsed = parseNode(document);
+        Document document = domFactory.newDocumentBuilder().parse(context.getResources().openRawResource(R.raw.determination));
+        parsed = parseNode(document.getChildNodes().item(0));
     }
 
     public String[] getCurrentChoices() {
@@ -34,7 +35,7 @@ public class IdentificationKey {
         String[] ret = new String[getCurrentKeyNode().getChoices().size()];
 
         for (int i = 0; i < getCurrentKeyNode().getChoices().size(); i++) {
-            ret[i] = getCurrentKeyNode().getChoices().get(i).getValue();
+            ret[i] = "" + getCurrentKeyNode().getChoices().get(i).getValue();
         }
 
         return ret;
@@ -55,7 +56,7 @@ public class IdentificationKey {
         NodeList nodes = node.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node n = nodes.item(i);
-            if (n.getLocalName().equalsIgnoreCase("value")) {
+            if (n.getNodeName().equalsIgnoreCase("value")) {
                 ret.setValue(n.getTextContent());
             } else {
                 ret.getChoices().add(parseNode(n));
@@ -77,6 +78,9 @@ public class IdentificationKey {
     }
 
     private KeyNode getCurrentKeyNode() {
+        if (path.size() == 0) {
+            return parsed;
+        }
         return path.get(path.size() - 1);
     }
 }
