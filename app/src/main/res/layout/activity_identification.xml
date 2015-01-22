@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:text="Sélectionnez la clé d'identification"
+        android:text="Sélectionnez la clé de détermination"
         android:gravity="center_horizontal"
         android:padding="30dp"
         android:textSize="24sp"/>
