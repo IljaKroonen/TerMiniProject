@@ -1,13 +1,22 @@
 package com.m2dl.nater.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Toast;
 
 public class PreviewCamera extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
@@ -71,4 +80,6 @@ public class PreviewCamera extends SurfaceView implements SurfaceHolder.Callback
             Log.d("TAG", "Error starting camera preview: " + e.getMessage());
         }
     }
+
+
 }

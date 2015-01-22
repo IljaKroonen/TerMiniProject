@@ -45,7 +45,7 @@
         android:layout_alignParentRight="true"
         android:background="@drawable/rotate_picture"
         android:layout_margin="20dp"
-        android:onClick="=rotate"
+        android:onClick="rotate"
         />
 
     <Button
@@ -79,6 +79,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/fleche"
+        android:visibility="gone"
         android:layout_margin="20dp"
         android:onClick="next"
         />

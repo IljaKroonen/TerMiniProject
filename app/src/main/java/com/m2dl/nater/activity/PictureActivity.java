@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.m2dl.nater.R;
+import com.m2dl.nater.data.GlobalVars;
 import com.m2dl.nater.data.IdentificationKey;
 import com.m2dl.nater.utils.PreviewCamera;
 
@@ -43,7 +44,7 @@ public class PictureActivity extends Activity implements LocationListener{
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    int cameraId = -1;
+    int cameraId = 0;
 
     private Camera mCamera;
     private PreviewCamera mPreview;
@@ -53,6 +54,7 @@ public class PictureActivity extends Activity implements LocationListener{
     private Button buttonSwitch;
     private Button buttonSelection;
     private Button buttonComment;
+    private Button buttonNext;
     private FrameLayout preview;
     private FrameLayout informationsLayout;
     private Context context;
@@ -83,75 +85,10 @@ public class PictureActivity extends Activity implements LocationListener{
         isSelected = false;
         commentSelected = false;
         selectionSelected = false;
-//        mCamera = getCameraInstance();
-//
-//        initView();
-//        setListener();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-        Button useOtherCamera = (Button) findViewById(R.id.button_rotate);
-//if phone has only one camera, hide "switch camera" button
-        useOtherCamera.setVisibility(View.INVISIBLE);
-            useOtherCamera.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    boolean inPreview = true;
-                    SurfaceHolder previewHolder=null;
-                    if (inPreview) {
-                        mCamera.stopPreview();
-                    }
-                    //NB: if you don't release the current camera before switching, you app will crash
-                    mCamera.release();
-
-                    //swap the id of the camera to be used
-                    int currentCameraId = 0;
-                    if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                    } else {
-                        currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-                    }
-                    mCamera = Camera.open(currentCameraId);
-                    //Code snippet for this method from somewhere on android developers, i forget where
-                    //setCameraDisplayOrientation(PictureActivity.this, currentCameraId, mCamera);
-                    try {
-                        //this step is critical or preview on new camera will no know where to render to
-
-
-                        mCamera.setPreviewDisplay(previewHolder);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    mCamera.startPreview();
-                }
-            });
-
     }
 
-    public static void setCameraDisplayOrientation(Activity activity,
-                                                   int cameraId, android.hardware.Camera camera) {
-        android.hardware.Camera.CameraInfo info =
-                new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(cameraId, info);
-        int rotation = activity.getWindowManager().getDefaultDisplay()
-                .getRotation();
-        int degrees = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
-        }
-
-        int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;  // compensate the mirror
-        } else {  // back-facing
-            result = (info.orientation - degrees + 360) % 360;
-        }
-        camera.setDisplayOrientation(result);
-    }
 
 
     @Override
@@ -177,7 +114,7 @@ public class PictureActivity extends Activity implements LocationListener{
         buttonSwitch = (Button)findViewById(R.id.button_rotate);
         buttonSelection = (Button)findViewById(R.id.button_select);
         buttonComment = (Button)findViewById(R.id.button_comment);
-
+        buttonNext = (Button) findViewById(R.id.button_next);
         mPreview = new PreviewCamera(this, mCamera);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
         informationsLayout = (FrameLayout) findViewById(R.id.informations);
@@ -191,6 +128,22 @@ public class PictureActivity extends Activity implements LocationListener{
     }
 
     public void next(View v) {
+        //TODO
+//        View rootView = findViewById(android.R.id.content).getRootView();
+//        rootView.setDrawingCacheEnabled(true);
+//        GlobalVars.bitmap =  rootView.getDrawingCache();
+//        Bitmap saveBitmap = Bitmap.createBitmap(preview.getWidth(), preview.getHeight(), Bitmap.Config.ARGB_8888);
+//        Canvas c = new Canvas(saveBitmap);
+//        mPreview.draw(c);
+//        GlobalVars.bitmap =  saveBitmap;
+//        View rootView = findViewById(android.R.id.content).getRootView();
+//        rootView.setDrawingCacheEnabled(true);
+//        GlobalVars.bitmap =  rootView.getDrawingCache();
+
+//        View view = findViewById(R.id.camera_preview);
+        informationsLayout.setDrawingCacheEnabled(true);
+        informationsLayout.buildDrawingCache();
+        GlobalVars.bitmap = informationsLayout.getDrawingCache();
         Intent intent = new Intent(this, IdentificationKeyActivity.class);
         startActivity(intent);
         finish();
@@ -274,6 +227,7 @@ public class PictureActivity extends Activity implements LocationListener{
         buttonSwitch.setVisibility(View.VISIBLE);
         buttonSelection.setVisibility(View.INVISIBLE);
         buttonComment.setVisibility(View.INVISIBLE);
+        buttonNext.setVisibility(View.GONE);
         informationsLayout.removeAllViews();
         informationsLayout.setVisibility(View.GONE);
         isCommented = false;
@@ -286,6 +240,7 @@ public class PictureActivity extends Activity implements LocationListener{
         buttonSwitch.setVisibility(View.GONE);
         buttonSelection.setVisibility(View.VISIBLE);
         buttonComment.setVisibility(View.VISIBLE);
+        buttonNext.setVisibility(View.VISIBLE);
         informationsLayout.setVisibility(View.VISIBLE);
     }
 
@@ -297,11 +252,30 @@ public class PictureActivity extends Activity implements LocationListener{
             FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
             preview.removeAllViews();
             preview.addView(mPreview);
+            mCamera = getCameraInstance();
+            initView();
+            setListener();
         }
         else {
             super.onBackPressed();
         }
     }
+
+    public void rotate(View v) {
+        if(cameraId==0) {
+            cameraId=1;
+        }
+        else {
+            cameraId=0;
+        }
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.removeAllViews();
+        preview.addView(mPreview);
+        mCamera = Camera.open(cameraId);
+        initView();
+        setListener();
+    }
+
 
     public void select(View v) {
         if (selectionSelected) {
@@ -353,7 +327,7 @@ public class PictureActivity extends Activity implements LocationListener{
         } else {
             return null;
         }
-
+        GlobalVars.file = Uri.fromFile(mediaFile);
         return mediaFile;
     }
 
@@ -427,7 +401,7 @@ public class PictureActivity extends Activity implements LocationListener{
        String lon = location.getLongitude()+"";
         Log.d(lat,"Latitude");
         Log.d(lon,"Longitude");
-
+        GlobalVars.location = location;
     }
 
     @Override
@@ -445,14 +419,5 @@ public class PictureActivity extends Activity implements LocationListener{
         Log.d("Latitude","disable");
     }
 
-public void rotate() {
-    cameraId = findFrontFacingCamera();
-    if (cameraId < 0) {
-        Toast.makeText(this, "No front facing camera found.",
-                Toast.LENGTH_LONG).show();
-    } else {
-        mCamera = Camera.open(cameraId);
-    }
-}
 
 }

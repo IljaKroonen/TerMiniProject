@@ -2,10 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:text="Sélectionnez la clé d'identification"
+        android:gravity="center_horizontal"
+        android:padding="30dp"
+        android:textSize="24sp"/>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/spinner_style"
+        android:layout_margin="20dp"
         android:id="@+id/spinner" />
 
     <Button
@@ -13,12 +23,15 @@
         android:layout_height="wrap_content"
         android:text="Next"
         android:id="@+id/nextButton"
+        android:layout_margin="10dp"
+        android:background="@drawable/selector"
         android:layout_gravity="center_horizontal" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="OK"
+        android:background="@drawable/selector"
         android:id="@+id/okButton"
         android:layout_gravity="center_horizontal" />
 
