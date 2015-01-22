@@ -22,12 +22,20 @@ public class SendPictureEmail implements ISendPicture {
 
     @Override
     public void sendPicture(final Picture picture) {
+        String commentAndCursor ="";
+        if(GlobalVars.commentaire != null && GlobalVars.localisationCommentaire!=null) {
+            commentAndCursor = "Commentaire de l'utilisateur : " + GlobalVars.commentaire + " aux coordonnées X:" + GlobalVars.localisationCommentaire.x + " Y: " + GlobalVars.localisationCommentaire.y;
+        }
+        if(GlobalVars.localisationCurseur != null) {
+            commentAndCursor += " - Selection de l'utilisateur aux coordonnées X:" + GlobalVars.localisationCurseur.x + " Y: " + GlobalVars.localisationCurseur.y;
+        }
+        final String result = commentAndCursor;
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     synchronized (sender) {
-                        sender.addAttachment(picture.mImageUri.getPath(), "Photo portant la clé d'identification : " + picture.mIdentificationKey.toString() + " - pris le " + picture.mDate.toString() + " par " + picture.mUser + " à " + getCity(picture.mLocation));
+                        sender.addAttachment(picture.mImageUri.getPath(), "Photo portant la clé d'identification : " + picture.mIdentificationKey.toString() + " - pris le " + picture.mDate.toString() + " par " + picture.mUser + " à " + getCity(picture.mLocation) + ". " + result );
                         sender.sendMail("Nater image upload", picture.toString(), SenderProvider.APPLICATION_EMAIL, SenderProvider.SHARING_EMAIL);
                     }
                 } catch (Exception e) {

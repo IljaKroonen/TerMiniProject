@@ -4,30 +4,25 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.m2dl.nater.R;
 import com.m2dl.nater.data.GlobalVars;
-import com.m2dl.nater.data.IdentificationKey;
 import com.m2dl.nater.utils.PreviewCamera;
 
 import java.io.File;
@@ -59,8 +54,8 @@ public class PictureActivity extends Activity implements LocationListener{
     private FrameLayout informationsLayout;
     private Context context;
 
-    private EditText comment;
-    private ImageView selection;
+    private EditText comment = null;
+    private ImageView selection = null;
     private boolean isCommented;
     private boolean isSelected;
 
@@ -69,11 +64,6 @@ public class PictureActivity extends Activity implements LocationListener{
     private boolean isLighOn;
 
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
-    String lat;
-    String provider;
-    protected String latitude,longitude;
-    protected boolean gps_enabled,network_enabled;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,21 +119,24 @@ public class PictureActivity extends Activity implements LocationListener{
 
     public void next(View v) {
         //TODO
-//        View rootView = findViewById(android.R.id.content).getRootView();
-//        rootView.setDrawingCacheEnabled(true);
-//        GlobalVars.bitmap =  rootView.getDrawingCache();
-//        Bitmap saveBitmap = Bitmap.createBitmap(preview.getWidth(), preview.getHeight(), Bitmap.Config.ARGB_8888);
-//        Canvas c = new Canvas(saveBitmap);
-//        mPreview.draw(c);
-//        GlobalVars.bitmap =  saveBitmap;
-//        View rootView = findViewById(android.R.id.content).getRootView();
-//        rootView.setDrawingCacheEnabled(true);
-//        GlobalVars.bitmap =  rootView.getDrawingCache();
-
-//        View view = findViewById(R.id.camera_preview);
         informationsLayout.setDrawingCacheEnabled(true);
         informationsLayout.buildDrawingCache();
         GlobalVars.bitmap = informationsLayout.getDrawingCache();
+
+        if (comment!=null) {
+            GlobalVars.commentaire = comment.getText().toString();
+            GlobalVars.localisationCommentaire = new Point((int)comment.getX(),(int)comment.getY());
+        }
+        else {
+            GlobalVars.commentaire = null;
+            GlobalVars.localisationCommentaire = null;
+        }
+        if (selection!=null) {
+            GlobalVars.localisationCurseur = new Point((int)selection.getX(),(int)selection.getY());
+        }
+        else {
+            GlobalVars.localisationCurseur = null;
+        }
         Intent intent = new Intent(this, IdentificationKeyActivity.class);
         startActivity(intent);
         finish();
@@ -232,6 +225,8 @@ public class PictureActivity extends Activity implements LocationListener{
         informationsLayout.setVisibility(View.GONE);
         isCommented = false;
         isSelected = false;
+        comment = null;
+        selection = null;
     }
 
     private void hideElements() {

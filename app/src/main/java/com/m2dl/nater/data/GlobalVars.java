@@ -2,6 +2,7 @@ package com.m2dl.nater.data;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
 
@@ -14,4 +15,7 @@ public class GlobalVars {
     public static Bitmap bitmap = null;
     public static Location location = null;
     public static Context context = null;
+    public static String commentaire = "";
+    public static Point localisationCommentaire = null;
+    public static Point localisationCurseur = null;
 }
